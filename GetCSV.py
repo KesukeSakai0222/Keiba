@@ -51,39 +51,38 @@ for year in tqdm(range(2008, 2019)):
                         
                         for m in range(len(soup.find_all('div', attrs='Rank'))):
                             dst = pd.Series(index=df_col)
-                        try:
-                            dst['year'] = CommonYear
-                            dst['date'] = CommonDate
-                            dst['field']= CommonField
-                            dst['race'] = CommonRace
-                            dst['race_name'] = CommonRname
-                            dst['course'] = CommonCourse
-                            dst['head_count'] = CommonHcount
-                            dst['rank'] = soup.find_all('div', attrs='Rank')[m].contents[0]
-                            dst['horse_name'] = soup.find_all('dt', attrs=['class', 'Horse_Name'])[m].a.string
-                            detailL = soup.find_all('span', attrs=['class', 'Detail_Left'])[m]
-                            dst['gender'] = list(detailL.contents[0].split()[0])[0]
-                            dst['age'] = list(detailL.contents[0].split()[0])[1]
-                            dst['trainerA'] = detailL.span.string.split('･')[0]
-                            dst['trainerB'] = detailL.span.string.split('･')[1]
-                            if len(detailL.contents[0].split())>=2:
-                                dst['weight'] = detailL.contents[0].split()[1].split('(')[0]
-                                if len(detailL.contents[0].split()[1].split('('))>=2:
-                                    dst['c_weight'] = detailL.contents[0].split()[1].split('(')[1].strip(')')
-                            detailR = soup.find_all('span', attrs=['class', 'Detail_Right'])[m].contents
-                            if  "\n" in detailR or "\n▲" in detailR or '\n☆' in detailR:
-                                detailR.pop(0)
-                            dst['jackie'] = detailR[0].string.strip()
-                            dst['j_weight'] = detailR[2].strip().replace('(', '').replace(')', '')
-                            Odds = soup.find_all('td', attrs=['class', 'Odds'])[m].contents[1]
-                            if Odds.dt.string is not None:
-                                dst['odds'] = Odds.dt.string.strip('倍')
-                                dst['popu'] = Odds.dd.string.strip('人気')
-                        except:
-                            time.sleep(1)
-                            pass
-                        dst.name = str(year) + numStr(i) + numStr(j) + numStr(k) + numStr(l) + numStr(m)
+                            try:
+                                dst['year'] = CommonYear
+                                dst['date'] = CommonDate
+                                dst['field']= CommonField
+                                dst['race'] = CommonRace
+                                dst['race_name'] = CommonRname
+                                dst['course'] = CommonCourse
+                                dst['head_count'] = CommonHcount
+                                dst['rank'] = soup.find_all('div', attrs='Rank')[m].contents[0]
+                                dst['horse_name'] = soup.find_all('dt', attrs=['class', 'Horse_Name'])[m].a.string
+                                detailL = soup.find_all('span', attrs=['class', 'Detail_Left'])[m]
+                                dst['gender'] = list(detailL.contents[0].split()[0])[0]
+                                dst['age'] = list(detailL.contents[0].split()[0])[1]
+                                dst['trainerA'] = detailL.span.string.split('･')[0]
+                                dst['trainerB'] = detailL.span.string.split('･')[1]
+                                if len(detailL.contents[0].split())>=2:
+                                    dst['weight'] = detailL.contents[0].split()[1].split('(')[0]
+                                    if len(detailL.contents[0].split()[1].split('('))>=2:
+                                        dst['c_weight'] = detailL.contents[0].split()[1].split('(')[1].strip(')')
+                                detailR = soup.find_all('span', attrs=['class', 'Detail_Right'])[m].contents
+                                if  "\n" in detailR or "\n▲" in detailR or '\n☆' in detailR:
+                                    detailR.pop(0)
+                                dst['jackie'] = detailR[0].string.strip()
+                                dst['j_weight'] = detailR[2].strip().replace('(', '').replace(')', '')
+                                Odds = soup.find_all('td', attrs=['class', 'Odds'])[m].contents[1]
+                                if Odds.dt.string is not None:
+                                    dst['odds'] = Odds.dt.string.strip('倍')
+                                    dst['popu'] = Odds.dd.string.strip('人気')
+                            except:
+                                time.sleep(1)
+                            dst.name = str(year) + numStr(i) + numStr(j) + numStr(k) + numStr(l) + numStr(m)
                           
-                        df = df.append(dst)
+                            df = df.append(dst)
 
     df.to_csv('./data/keiba'+ str(year)+ '.csv', encoding='shift-jis')
