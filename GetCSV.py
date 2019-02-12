@@ -17,8 +17,10 @@ df_col = ['year', 'date', 'field', 'race', 'race_name'
           , 'course', 'head_count', 'rank', 'horse_name'
           , 'gender', 'age', 'trainerA', 'trainerB', 'weight', 'c_weight', 'jackie', 'j_weight'
           , 'odds','popu']
-
-os.mkdir('./data')
+if os.path.exists('./data'):
+    pass
+else:
+    os.mkdir('./data')
 
 for year in tqdm(range(2008, 2019)):
     df = pd.DataFrame()
