@@ -7,10 +7,7 @@ import os
 import sys
 
 def numStr(num):
-    if num >= 10:
-        return str(num)
-    else:
-        return '0' + str(num)
+    return str(num).zfill(2)
 
 Base = "http://race.sp.netkeiba.com/?pid=race_result&race_id="
 dst = ''
@@ -25,8 +22,8 @@ if not os.path.exists('./data'):
 designated_year = int(sys.argv[1])
 
 for year in tqdm(range(designated_year, designated_year+1)):
+    df = pd.DataFrame()
     for i in range(1, 11):
-        df = pd.DataFrame()
         for j in range(1, 11):
             for k in range(1, 11):
                 for l in range(1, 13):
@@ -87,4 +84,4 @@ for year in tqdm(range(designated_year, designated_year+1)):
                           
                             df = df.append(dst)
 
-        df.to_csv('./data/keiba'+ str(year)+str(i) '.csv', encoding='shift-jis')
+    df.to_csv('./data/keiba'+ str(year)+ '.csv', encoding='shift-jis')
