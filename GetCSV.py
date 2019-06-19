@@ -5,12 +5,10 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import os
 import sys
+import logging
 
-def numStr(num):
-    if num >= 10:
-        return str(num)
-    else:
-        return '0' + str(num)
+def numStr(num:int): -> str
+    return str(num).zfill(2)
 
 Base = "http://race.sp.netkeiba.com/?pid=race_result&race_id="
 dst = ''
