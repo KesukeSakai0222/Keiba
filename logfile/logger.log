@@ -5550,3 +5550,4 @@ INFO:root:html取得
 INFO:root:parser完了
 INFO:root:ページ有り
 INFO:root:共通部分抜き出し 完了
+INFO:root:DataFrameの作成 完了

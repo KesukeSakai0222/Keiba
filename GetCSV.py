@@ -34,7 +34,7 @@ for year in range(designated_year, designated_year+1):
         df = pd.DataFrame()
         logging.info('DataFrameの作成 完了')
         for j in range(1, 11):
-            logger.info("j = {}".format(j))
+            logging.info("j = {}".format(j))
             for k in range(1, 11):
                 for l in range(1, 13):
                     # urlでぶっこ抜く
