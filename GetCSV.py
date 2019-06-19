@@ -8,14 +8,14 @@ import sys
 import logging
 
 
-def numStr(num:int): -> str
+def numStr(num:int):
     '''
     数字を0埋めして2桁で返す
     '''
     return str(num).zfill(2)
 
 
-logging.basicConfig(filename='logfile/logger.log', level=logging.DEBUG)
+logging.basicConfig(filename='logfile/logger.log', level=logging.INFO)
 
 Base = "http://race.sp.netkeiba.com/?pid=race_result&race_id="
 dst = ''
@@ -29,11 +29,12 @@ if not os.path.exists('./data'):
 
 designated_year = 2018
 
-for year in tqdm(range(designated_year, designated_year+1)):
-    for i in range(1, 11):
+for year in range(designated_year, designated_year+1):
+    for i in tqdm(range(1, 11)):
         df = pd.DataFrame()
         logging.info('DataFrameの作成 完了')
         for j in range(1, 11):
+            logger.info("j = {}".format(j))
             for k in range(1, 11):
                 for l in range(1, 13):
                     # urlでぶっこ抜く
@@ -51,7 +52,7 @@ for year in tqdm(range(designated_year, designated_year+1)):
                         time.sleep(1)
                         break
                     else:
-                        logging('ページ有り')
+                        logging.info('ページ有り')
                         #共通部分を抜き出す
                         CommonYear = year
                         CommonDate = soup.find_all('div', attrs={'class', 'Change_Btn Day'})[0].string.strip()
@@ -63,7 +64,7 @@ for year in tqdm(range(designated_year, designated_year+1)):
                         
                         logging.info('共通部分抜き出し 完了')
                         for m in range(len(soup.find_all('div', attrs='Rank'))):
-                            dst = pd.Series(index=df_col)
+                            dst = pd.Series(index = df_col)
                             try:
                                 dst['year'] = CommonYear
                                 dst['date'] = CommonDate
@@ -93,10 +94,10 @@ for year in tqdm(range(designated_year, designated_year+1)):
                                     dst['odds'] = Odds.dt.string.strip('倍')
                                     dst['popu'] = Odds.dd.string.strip('人気')
                             
-                            dst.name = str(year) + numStr(i) + numStr(j) + numStr(k) + numStr(l) + numStr(m)
-                          　
-                            df = df.append(dst)
-                            logging.info('append 完了')
-
+                                dst.name = str(year) + numStr(i) + numStr(j) + numStr(k) + numStr(l) + numStr(m)
+                                df = df.append(dst)
+                            except:
+                                pass
+                            
         df.to_csv('./data/keiba'+ str(year) + str(i) + '.csv', encoding='shift-jis')
         logging.info('csv 出力完了')
