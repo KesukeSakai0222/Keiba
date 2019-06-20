@@ -14,10 +14,8 @@ def numStr(num:int):
     '''
     return str(num).zfill(2)
 
-
-logging.basicConfig(filename='logfile/logger.log', level=logging.DEBUG)
 fmt = "%(asctime)s %(levelname)s %(name)s :%(message)s"
-logging.basicConfig(level=logging.DEBUG, format=fmt)
+logging.basicConfig(filename='logfile/logger.log', level=logging.DEBUG, format=fmt)
 
 Base = "http://race.sp.netkeiba.com/?pid=race_result&race_id="
 dst = ''
