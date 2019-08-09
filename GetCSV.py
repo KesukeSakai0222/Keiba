@@ -95,6 +95,7 @@ if __name__ == "__main__":
     logging.debug('DataFrameの作成 完了')
 
     for i in tqdm(range(1, 11)):
+        logging.info("i = {}".format(i))
         for j in range(1, 11):
             logging.info("j = {}".format(j))
             for k in range(1, 11):
@@ -121,7 +122,6 @@ if __name__ == "__main__":
                         for m in range(len(soup.find_all('dic', attrs='Rank'))):
                             try:
                                 dst = get_one_record(soup, common)
-
                                 dst.name = page_id + numStr(m)
                                 df = df.append(dst)
                                 if df.shape[0] >= 5000:
@@ -131,7 +131,7 @@ if __name__ == "__main__":
                                     csv_count += 1
                             except:
                                 logging.info('レコード取得失敗')
-    
+
     df.to_csv('./data/keiba' + str(designated_year) + str(csv_count) + '.csv', encoding='sjis')
     logging.info('csv No.{} 出力完了'.format(csv_count))
     logging.info('プログラムが正常に終了しました')
