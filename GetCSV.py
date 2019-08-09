@@ -131,3 +131,7 @@ if __name__ == "__main__":
                                     csv_count += 1
                             except:
                                 logging.info('レコード取得失敗')
+    
+    df.to_csv('./data/keiba' + str(designated_year) + str(csv_count) + '.csv', encoding='sjis')
+    logging.info('csv No.{} 出力完了'.format(csv_count))
+    logging.info('プログラムが正常に終了しました')
