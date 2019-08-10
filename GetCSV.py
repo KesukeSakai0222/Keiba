@@ -34,11 +34,13 @@ def scrape_common(soup: BeautifulSoup, designated_year: int):
     return CommonParam
 
 
-def get_one_record(soup, common):
+def get_one_record(soup, common, df_col, m):
     """
     ページ上の一頭の馬についての結果を抜き出しpd.Seriesとして返します
     @param soup: BeautifulSoup
-    @param common: dict
+    @param common: 共通部分のdict
+    @param df_col: カラム名のlist
+    @param m: 調べる馬の順位int
     @return dst: pd.Series
     """
     dst = pd.Series(index=df_col)
@@ -63,7 +65,7 @@ def get_one_record(soup, common):
         if len(detailL.contents[0].split()[1].split('(')) >= 2:
             dst['c_weight'] = detailL.contents[0].split()[1].split('(')[1].strip(')')
     detailR = soup.find_all('span', attrs=['class', 'Detail_Right'])[m].contents
-    if "\n" in detailR or "\n▲" in detailR or '\n☆' in detailR:
+    if  detailR[0] in ("\n", "\n▲", '\n☆', "\n△"):
         detailR.pop(0)
     dst['jackie'] = detailR[0].string.strip()
     dst['j_weight'] = detailR[2].strip().replace('(', '').replace(')', '')
@@ -79,18 +81,19 @@ if __name__ == "__main__":
     designated_year = 2018
     fmt = "%(asctime)s %(levelname)s %(name)s :%(message)s"
     logging.basicConfig(filename='logfile/logger.log', level=logging.INFO, format=fmt)
-
+    logging.info("CSV取り込みを開始")
+    DF_MEMORY_SIZE = 4000000
+    
     Base = "http://race.sp.netkeiba.com/?pid=race_result&race_id="
-    dst = ''
-    df_col = ['year', 'date', 'field', 'race', 'race_name',
-              'course', 'head_count', 'rank', 'horse_name',
-              'gender', 'age', 'trainerA', 'trainerB', 'weight', 'c_weight', 'jackie', 'j_weight',
-              'odds', 'popu']
+    df_col = {'year': 'int16', 'date': 'object', 'field': 'object', 'race': 'object', 'race_name': 'object',
+              'course': 'object', 'head_count': 'object', 'rank': 'int8', 'horse_name': 'object',
+              'gender': 'object', 'age': 'int8', 'trainerA': 'object', 'trainerB': 'object', 'weight': 'int16', 'c_weight': 'object', 'jackie': 'object', 'j_weight': 'float32',
+              'odds': 'float32', 'popu': 'int8'}
 
     if not os.path.exists('./data'):
         os.mkdir('./data')
 
-    df = pd.DataFrame(index=df_col)
+    df = pd.DataFrame(columns=df_col.keys())
     csv_count = 0
     logging.debug('DataFrameの作成 完了')
 
@@ -98,6 +101,7 @@ if __name__ == "__main__":
         logging.info("i = {}".format(i))
         for j in range(1, 11):
             logging.info("j = {}".format(j))
+            logging.info("df size:{}bite".format(sys.getsizeof(df)))
             for k in range(1, 11):
                 for l in range(1, 13):
                     # urlでぶっこ抜く
@@ -119,18 +123,20 @@ if __name__ == "__main__":
                         logging.debug('ページ有り')
                         # 共通部分を抜き出す
                         common = scrape_common(soup, designated_year)
-                        for m in range(len(soup.find_all('dic', attrs='Rank'))):
+                        for m in range(len(soup.find_all('div', attrs='Rank'))):
                             try:
-                                dst = get_one_record(soup, common)
-                                dst.name = page_id + numStr(m)
-                                df = df.append(dst)
-                                if df.shape[0] >= 5000:
-                                    df.to_csv('./data/keiba' + str(designated_year) + str(csv_count) + '.csv', encoding='sjis')
-                                    logging.info('csv No.{} 出力完了'.format(csv_count))
-                                    df = pd.DataFrame(index=df_col)
-                                    csv_count += 1
+                                dst = get_one_record(soup, common, df_col.keys(), m)
                             except:
-                                logging.info('レコード取得失敗')
+                                logging.info(url + ' {}番でレコード取得失敗\n'.format(m))
+                                logging.info("i={}, j={}, k={}, l={}, m={}".format(i, j, k, l, m))
+                                sys.exit(1)
+                            dst.name = page_id + numStr(m)
+                            df = df.append(dst)
+                            if sys.getsizeof(df) >= DF_MEMORY_SIZE:
+                                df.to_csv('./data/keiba' + str(designated_year) + str(csv_count) + '.csv', encoding='sjis')
+                                logging.info('csv No.{} 出力完了'.format(csv_count))
+                                df = pd.DataFrame(columns=df_col.keys())
+                                csv_count += 1
 
     df.to_csv('./data/keiba' + str(designated_year) + str(csv_count) + '.csv', encoding='sjis')
     logging.info('csv No.{} 出力完了'.format(csv_count))
