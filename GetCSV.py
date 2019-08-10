@@ -84,7 +84,7 @@ if __name__ == "__main__":
     logging.info("CSV取り込みを開始")
     DF_MEMORY_SIZE = 4000000
     
-    Base = "http://race.sp.netkeiba.com/?pid=race_result&race_id="
+    BASE = "http://race.sp.netkeiba.com/?pid=race_result&race_id="
     df_col = {'year': 'int16', 'date': 'object', 'field': 'object', 'race': 'object', 'race_name': 'object',
               'course': 'object', 'head_count': 'object', 'rank': 'int8', 'horse_name': 'object',
               'gender': 'object', 'age': 'int8', 'trainerA': 'object', 'trainerB': 'object', 'weight': 'int16', 'c_weight': 'object', 'jackie': 'object', 'j_weight': 'float32',
@@ -106,7 +106,7 @@ if __name__ == "__main__":
                 for l in range(1, 13):
                     # urlでぶっこ抜く
                     page_id = str(designated_year) + numStr(i) + numStr(j) + numStr(k) + numStr(l)
-                    url = Base + page_id
+                    url = BASE + page_id
                     html = requests.get(url)
                     time.sleep(1)
                     logging.debug('html取得')
