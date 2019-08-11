@@ -85,15 +85,15 @@ if __name__ == "__main__":
     DF_MEMORY_SIZE = 4000000
     
     BASE = "http://race.sp.netkeiba.com/?pid=race_result&race_id="
-    df_col = {'year': 'int16', 'date': 'object', 'field': 'object', 'race': 'object', 'race_name': 'object',
-              'course': 'object', 'head_count': 'object', 'rank': 'int8', 'horse_name': 'object',
-              'gender': 'object', 'age': 'int8', 'trainerA': 'object', 'trainerB': 'object', 'weight': 'int16', 'c_weight': 'object', 'jackie': 'object', 'j_weight': 'float32',
-              'odds': 'float32', 'popu': 'int8'}
+    DF_COL = ['year', 'date', 'field', 'race', 'race_name',
+              'course', 'head_count', 'rank', 'horse_name',
+              'gender', 'age', 'trainerA', 'trainerB', 'weight',
+              'c_weight', 'jackie', 'j_weight','odds', 'popu']
 
     if not os.path.exists('./data'):
         os.mkdir('./data')
 
-    df = pd.DataFrame(columns=df_col.keys())
+    df = pd.DataFrame(columns=DF_COL)
     csv_count = 0
     logging.debug('DataFrameの作成 完了')
 
@@ -125,17 +125,17 @@ if __name__ == "__main__":
                         common = scrape_common(soup, designated_year)
                         for m in range(len(soup.find_all('div', attrs='Rank'))):
                             try:
-                                dst = get_one_record(soup, common, df_col.keys(), m)
+                                dst = get_one_record(soup, common, DF_COL, m)
                             except:
-                                logging.info(url + ' {}番でレコード取得失敗\n'.format(m))
-                                logging.info("i={}, j={}, k={}, l={}, m={}".format(i, j, k, l, m))
+                                logging.error(url + ' {}番でレコード取得失敗\n'.format(m))
+                                logging.error("i={}, j={}, k={}, l={}, m={}".format(i, j, k, l, m))
                                 sys.exit(1)
                             dst.name = page_id + numStr(m)
                             df = df.append(dst)
                             if sys.getsizeof(df) >= DF_MEMORY_SIZE:
                                 df.to_csv('./data/keiba' + str(designated_year) + str(csv_count) + '.csv', encoding='sjis')
                                 logging.info('csv No.{} 出力完了'.format(csv_count))
-                                df = pd.DataFrame(columns=df_col.keys())
+                                df = pd.DataFrame(columns=DF_COL)
                                 csv_count += 1
 
     df.to_csv('./data/keiba' + str(designated_year) + str(csv_count) + '.csv', encoding='sjis')
